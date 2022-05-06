@@ -1,9 +1,4 @@
-import sys
-import math
 from typing import Iterable
-
-PI = math.pi
-E = math.e
 
 class Node:
     def __init__(self, data) -> None:
@@ -24,12 +19,13 @@ class Node:
         return str(self.data)
     
 class LinkedList:
-    def __init__(self, iterable:Iterable) -> None:
+    def __init__(self, iterable:Iterable=None) -> None:
         self._length = 0
         self.head:Node = None
         self.tail:Node = None
-        for data in iterable:
-            self.push_back(data)
+        if iterable is not None:
+            for data in iterable:
+                self.push_back(data)
     
     def push_back(self, data):
         node = Node(data)
@@ -86,12 +82,12 @@ class LinkedList:
             raise IndexError("Index out of range")
         if key >= 0:
             node = self.head
-            for i in range(key - 1):
+            for i in range(key):
                 node = node.next
             return node
         else:
             node = self.tail
-            for i in range(-1, key - 1, -1):
+            for i in range(-1, key, -1):
                 node = node.prev
             return node
     
@@ -107,31 +103,47 @@ class LinkedList:
         return self._length
 
     def __getitem__(self, key):
-        if key >= self._length or key < -self._length:
-            raise IndexError()
+        if type(key) is slice:
+            start = 0 if key.start is None else key.start
+            stop = self._length - 1 if key.start is None else key.stop % self._length
+            step = 1 if key.step is None else key.step
             
-        if key >= 0:
-            node = self.head
-            for i in range(key - 1):
-                node = node.next
-            return node.data
+            if start < stop and step > 0:
+                s = self.get_node(start)
+                out = LinkedList([])
+                for i in range(start, stop, step):
+                    if s is None: break
+                    out.push_back(s.data)
+                    for j in range(step):
+                        s = s.next
+                        if s is None:
+                            break
+            elif start > stop and step < 0:
+                s = self.get_node(start)
+                out = LinkedList([])
+                for i in range(start, stop, step):
+                    if s is None: break
+                    out.push_back(s.data)
+                    for j in range(-step):
+                        s = s.prev
+                        if s is None:
+                            break
+            else: out = LinkedList([])
+            return out
         else:
-            node = self.tail
-            for i in range(-1, key - 1, -1):
-                node = node.prev
-            return node.data
+            return self.get_node(key).data
 
     def __setitem__(self, key, val):
         if key >= self._length or key < -self._length:
             raise IndexError("Index out of range")
         if key >= 0:
             node = self.head
-            for i in range(key - 1):
+            for i in range(key):
                 node = node.next
             node.data = val
         else:
             node = self.tail
-            for i in range(-1, key - 1, -1):
+            for i in range(-1, key, -1):
                 node = node.prev
             node.data = val
 
@@ -140,11 +152,11 @@ class LinkedList:
             raise IndexError()
         if key >= 0:
             node = self.head
-            for i in range(key - 1):
+            for i in range(key):
                 node = node.next
         else:
             node = self.tail
-            for i in range(-1, key - 1, -1):
+            for i in range(-1, key, -1):
                 node = node.prev
         l = node.prev
         r = node.next
@@ -159,16 +171,25 @@ class LinkedList:
             node = node.next
     
     def __list__(self) -> list:
-        return [val.data for val in self]
+        out = list()
+        s = self.head
+        while s is not None:
+            out.append(s.data)
+            s = s.next
+        return out
 
     def __str__(self) -> str:
         return str(self.__list__())
 
 
 if __name__ == '__main__':
-    a = [1, 2, 3, 4, '5']
+    LinkedList()
+    
+    a = [1, 2, 3, 4, 5]
     a = LinkedList(a)
-    print(a[2])
+    print(a)
+    print(a[-1])
+    print(a[0:2])
     a.push_back(6)
     print(a)
     a = LinkedList([1])
@@ -186,4 +207,8 @@ if __name__ == '__main__':
     print(a)
     t = a[3]
     del t
+    print(a)
+    a = list(range(10))
+    print(a)
+    del a[3:5]
     print(a)

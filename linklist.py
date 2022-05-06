@@ -108,27 +108,14 @@ class LinkedList:
             stop = self._length - 1 if key.start is None else key.stop % self._length
             step = 1 if key.step is None else key.step
             
-            if start < stop and step > 0:
-                s = self.get_node(start)
-                out = LinkedList([])
-                for i in range(start, stop, step):
+            out = LinkedList()
+            s = self.get_node(key.start)
+            for i in range(start, stop, step):
+                if s is None: break
+                out.push_back(s.data)
+                for j in range(abs(step)):
+                    s = s.next if step > 0 else s.prev
                     if s is None: break
-                    out.push_back(s.data)
-                    for j in range(step):
-                        s = s.next
-                        if s is None:
-                            break
-            elif start > stop and step < 0:
-                s = self.get_node(start)
-                out = LinkedList([])
-                for i in range(start, stop, step):
-                    if s is None: break
-                    out.push_back(s.data)
-                    for j in range(-step):
-                        s = s.prev
-                        if s is None:
-                            break
-            else: out = LinkedList([])
             return out
         else:
             return self.get_node(key).data
@@ -184,12 +171,17 @@ class LinkedList:
 
 if __name__ == '__main__':
     LinkedList()
-    
     a = [1, 2, 3, 4, 5]
     a = LinkedList(a)
-    print(a)
-    print(a[-1])
-    print(a[0:2])
+    
+    print("Access tests")
+    assert str(a) == '[1, 2, 3, 4, 5]'
+    assert a[0] == 1
+    assert a[2] == 3
+    assert a[-1] == 5
+    assert type(a[0:2]) is LinkedList
+    assert str(a[0:3]) == '[1, 2, 3]'
+    
     a.push_back(6)
     print(a)
     a = LinkedList([1])

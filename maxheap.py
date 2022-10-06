@@ -44,6 +44,9 @@ class MaxHeap:
             self.size -= 1
             self._sift_down(self.size)
         return popped
+    
+    def top(self):
+        return self.arr[1]
 
     def __str__(self) -> str:
         if self.size == 0:

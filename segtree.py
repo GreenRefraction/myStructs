@@ -1,7 +1,7 @@
 # Python3 Code Addition
  
 # limit for array size
-N = 100000
+N = 8
  
 # Max size of tree
 tree = [0] * (2 * N)
@@ -59,9 +59,12 @@ def query(l, r) :
 # Driver Code
 if __name__ == "__main__" :
  
-    a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    a = [1, 2, 3, 4, 5, 6, 7, 8,9,10,11,12]
+    N = len(a)
+    tree = [0]*(2*N)
     n = len(a)
     build(a)
+    print(tree)
     print(query(1, 3))
     
     

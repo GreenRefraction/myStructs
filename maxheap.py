@@ -39,21 +39,22 @@ class MaxHeap:
         def __str__(self) -> str:
             return str(self.data)
 
-    def __init__(self, iter:Iterable=None):
+    def __init__(self, iter:Iterable=None, key:Callable=None):
         self._root = None
         self._length = 0
+        self._key  = key
         if iter is not None:
             for i in iter:
                 self.push(i)
 
 
-    def push(self, data, key=None):
+    def push(self, data):
         if self._length == 0:
             self._root = self.Node(data)
             self._length = 1
         else:
             new_node = self.Node(data)
-            self._root.push(new_node, self._length+1, key)
+            self._root.push(new_node, self._length+1, self._key)
             self._length += 1
 
     def pop(self):
@@ -118,8 +119,9 @@ class MaxHeap:
 
 
 if __name__ == '__main__':
-    N = 21
-    mheap = MaxHeap(range(N))
+    N = 5
+    V = [1, 0, 4, 2, 3]
+    mheap = MaxHeap(range(N), key=lambda i: V[i])
     for i in range(N):
         print(mheap.pop())
         print(mheap)

@@ -23,6 +23,8 @@ class MaxHeap:
         self._sift_down(parent)
         if self.arr[curr] > self.arr[parent]:
             self.swap(curr, parent)
+        if self.arr[curr^1] is not None and self.arr[curr^1] > self.arr[parent]:
+            self.swap(curr^1, parent)
         
 
     def push(self, element):
@@ -40,9 +42,7 @@ class MaxHeap:
             self.arr[1] = self.arr[self.size]
             self.arr[self.size] = None
             self.size -= 1
-            print(self)
             self._sift_down(self.size)
-            print(self)
         return popped
 
     def __str__(self) -> str:
@@ -69,7 +69,6 @@ if __name__ == "__main__":
     for i in range(N):
         heap.push(i)
     for i in range(N):
-        heap.pop()
-        input()
+        print(heap.pop())
     
     

@@ -3,9 +3,12 @@ import sys
  
 class MaxHeap:
  
-    def __init__(self, maxsize):
+    def __init__(self, maxsize, key=None):
         self.maxsize = maxsize
         self.size = 0
+        if key is None:
+            key = lambda i: i
+        self.key = key
         self.arr = [None] * (self.maxsize + 1)
  
     def swap(self, fpos, spos):
@@ -13,7 +16,7 @@ class MaxHeap:
 
     def _sift_up(self, k):
         while k > 1:
-            if self.arr[k] > self.arr[k >> 1]:
+            if self.key(self.arr[k]) > self.key(self.arr[k >> 1]):
                 self.swap(k, k >> 1)
             k >>= 1
     
@@ -21,9 +24,9 @@ class MaxHeap:
         parent = curr >> 1
         if parent == 0: return
         self._sift_down(parent)
-        if self.arr[curr] > self.arr[parent]:
+        if self.key(self.arr[curr]) > self.key(self.arr[parent]):
             self.swap(curr, parent)
-        if self.arr[curr^1] is not None and self.arr[curr^1] > self.arr[parent]:
+        if curr^1 <= self.size and self.key(self.arr[curr^1]) > self.key(self.arr[parent]):
             self.swap(curr^1, parent)
         
 

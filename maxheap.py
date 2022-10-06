@@ -1,128 +1,75 @@
-from typing import Callable, Iterable
 import math
-
+import sys
+ 
 class MaxHeap:
-    class Node:
-        left = None
-        right = None
-        def __init__(self, data) -> None:
-            self.data = data
+ 
+    def __init__(self, maxsize):
+        self.maxsize = maxsize
+        self.size = 0
+        self.arr = [None] * (self.maxsize + 1)
+ 
+    def swap(self, fpos, spos):
+        self.arr[fpos], self.arr[spos] = (self.arr[spos], self.arr[fpos])
 
-        def swap(self, child):
-            temp = self.data
-            self.data = child.data
-            child.data = temp
-
-        def check_invariant(self, child, key:Callable|None=None):
-            if key is None:
-                if self.data < child.data:
-                    self.swap(child)
-            else:
-                if key(self.data) < key(child.data):
-                    self.swap(child)
-
-        def push(self, new_node, k, key:Callable|None=None):
-            if k == 3:
-                self.right = new_node
-                self.check_invariant(self.right, key)
-            elif k == 2:
-                self.left = new_node
-                self.check_invariant(self.left, key)
-            elif k & 1:
-                self.right.push(new_node, k >> 1, key)
-                # check the heap invariant
-                self.check_invariant(self.right, key)
-            else:
-                self.left.push(new_node, k >> 1, key)
-                # check the heap invariant
-                self.check_invariant(self.left, key)
-        def __str__(self) -> str:
-            return str(self.data)
-
-    def __init__(self, iter:Iterable=None, key:Callable=None):
-        self._root = None
-        self._length = 0
-        self._key  = key
-        if iter is not None:
-            for i in iter:
-                self.push(i)
-
-
-    def push(self, data):
-        if self._length == 0:
-            self._root = self.Node(data)
-            self._length = 1
-        else:
-            new_node = self.Node(data)
-            self._root.push(new_node, self._length+1, self._key)
-            self._length += 1
-
-    def pop(self):
-        if self._length == 0:
-            raise Exception("Empty Heap")
-        elif self._length == 1:
-            out = self._root.data
-            self._root = None
-            self._length -= 1
-            return out
-        out = self._root.data
-        
-        last_node = self._get_node(self._length, self._root)
-        self._root.data = last_node.data
-        # sift down
-        k = self._length
-        curr = self._root
-        while k > 3:
-            if k & 1:
-                curr.check_invariant(curr.right)
-                curr = curr.right
-            else:
-                curr.check_invariant(curr.left)
-                curr = curr.left
+    def _sift_up(self, k):
+        while k > 1:
+            if self.arr[k] > self.arr[k >> 1]:
+                self.swap(k, k >> 1)
             k >>= 1
-        if k & 1:
-            curr.right = None
-        else:
-            curr.left = None
-        self._length -= 1
-        return out
+    
+    def _sift_down(self, curr):
+        parent = curr >> 1
+        if parent == 0: return
+        self._sift_down(parent)
+        if self.arr[curr] > self.arr[parent]:
+            self.swap(curr, parent)
+        
 
-    def _get_node(self, k, curr:Node):
-        if k == 2:
-            return curr.left
-        elif k == 3:
-            return curr.right
-        if k & 1:
-            return self._get_node(k >> 1, curr.right)
+    def push(self, element):
+        self.size += 1
+        self.arr[self.size] = element
+        self._sift_up(self.size)
+ 
+    def pop(self):
+        if self.size == 1:
+            popped = self.arr[1]
+            self.arr[1] = None
+            self.size = 0
         else:
-            return self._get_node(k >> 1, curr.left)
-
-    def top(self):
-        return self._root.data
+            popped = self.arr[1]
+            self.arr[1] = self.arr[self.size]
+            self.arr[self.size] = None
+            self.size -= 1
+            print(self)
+            self._sift_down(self.size)
+            print(self)
+        return popped
 
     def __str__(self) -> str:
-        out = ""
-        if self._length ==  0:
+        if self.size == 0:
             return ""
-        curr_layer = [self._root]
-        next_layer = list()
-        for i in range(int(math.log2(self._length)) + 1):
+        out = ""
+        curr_layer = [1]
+        for k in range(int(math.log2(self.size)) + 1):
+            out += " ".join(map(lambda i: str(self.arr[i]) if i <= self.size else "-", curr_layer)) + "\n"
             next_layer = list()
-            out  += " ".join(map(lambda d: str(d) if d is not None else "-", curr_layer)) + "\n"
-            while len(curr_layer) > 0:
-                curr = curr_layer.pop(0)
-                if curr is not None:
-                    next_layer.append(curr.left)
-                    next_layer.append(curr.right)
+            for i in curr_layer:
+                left = i << 1
+                right = left  + 1
+                next_layer.append(left)
+                next_layer.append(right)
             curr_layer = next_layer
         return out
-
-
-if __name__ == '__main__':
-    N = 5
-    V = [1, 0, 4, 2, 3]
-    mheap = MaxHeap(range(N), key=lambda i: V[i])
+    def __len__(self):
+        return self.size
+# Driver Code
+if __name__ == "__main__":    
+    heap = MaxHeap(15)
+    N = 10
     for i in range(N):
-        print(mheap.pop())
-        print(mheap)
+        heap.push(i)
+    for i in range(N):
+        heap.pop()
         input()
+    
+    

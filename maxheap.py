@@ -1,4 +1,3 @@
-import math
 import sys
 
  
@@ -68,7 +67,12 @@ class MaxHeap:
             return ""
         out = ""
         curr_layer = [1]
-        for k in range(int(math.log2(self.size)) + 1):
+        depth = 0
+        k = self.size
+        while k > 0:
+            depth += 1
+            k >>= 1
+        for k in range(depth):
             out += " ".join(map(lambda i: str(self.key(self.arr[i])) if i <= self.size else "-", curr_layer)) + "\n"
             #out += " ".join(map(lambda i: str(self.arr[i]) if i <= self.size else "-", curr_layer)) + "\n"
             next_layer = list()
@@ -94,8 +98,6 @@ class MaxHeap:
             self._check_health(right)
 # Driver Code
 if __name__ == "__main__":
-    N = 20
-    heap = MaxHeap(range(N))
-    print(heap)
-    for i in range(N):
-        print(heap.pop())
+    for i in range(20, 100):
+        heap = MaxHeap(range(i))
+        print(heap)
